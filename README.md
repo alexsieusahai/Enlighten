@@ -19,3 +19,43 @@ A deep learning library written in Python with a NumPy backend that aims on bein
     * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them. I might consider destroying the graph as I go on, once I have the gradients, in order to make it extremely memory efficient.
         * So, I'll need to have some kind of graph cleanup as I walk through the recursion stack; what I can do here is once I finish up the computations, I can delete the parents, since I'll never use them again.
 	* Defining convolutions to fit well into my automatic differentiation paradigm.
+
+## Usage examples
+
+Demonstration of autograd to find point derivative of sigmoid (current path is in autograd folder):
+```
+import numpy as np
+
+from variable import Variable
+
+x = Variable(2)
+f = 1 / (1 + np.e**(-1 * x))
+print(f)
+print(f.get_grad(x))
+```
+This will output:
+```
+0.8807970779778823
+0.1049935854035065
+```
+
+We can do this for multiple arguments, and store into intermediate variables, as well:
+```
+import numpy as np
+
+from variable import Variable
+
+x = Variable(4)
+z = Variable(2)
+w = x * 3
+a = w / z
+print(a)
+print(a.get_grad(x), a.get_grad(z))
+```
+This will output the following, as expected.
+```
+6.0
+1.5 -3.0
+```
+
+This is an extremely expressive and beautiful way of doing automatic differentiation, in my opinion. This forms the backbone of the deep learning library.
