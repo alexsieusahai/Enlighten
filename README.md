@@ -20,7 +20,14 @@ A deep learning library written in Python with a NumPy backend that aims on bein
         * So, I'll need to have some kind of graph cleanup as I walk through the recursion stack; what I can do here is once I finish up the computations, I can delete the parents, since I'll never use them again.
 	* Defining convolutions to fit well into my automatic differentiation paradigm.
 
-## Usage examples
+## Autograd
+### How does it work?
+For every single function, we can consider it as a composition of primitive functions, and by the chain rule and commutativity of multiplication, we can walk any way we'd like through the computational graph on an undirected path from any start variable to the output. This implementation of autograd considers only functions that takes in 2 arguments, and we consider a function of 3 arguments as a composition of 2 functions, for instance. 
+
+What this implementation of autograd does is it starts at the output node, and it walks through the computational subgraph of one of its children, until it hits a node. Then, that node finally returns the identity function and the corresponding derivative (1), and then we can compute the derivative of a given node with respect to its immediate children, and finally by chain rule, we can obtain the derivative of the goal node with respect to any of the inputs. We do this by keeping track of each variable in a dictionary holding all of the gradients, where the keys are the locations of the Variables in memory. 
+
+We store the value of each node, and (**not implemented yet, but it's on the horizon**) we delete the old intermediate nodes once we have no use for them anymore, sparing only the variables, so that they keep their locations in memory.
+### Usage examples
 
 Demonstration of autograd to find point derivative of sigmoid (current path is in autograd folder):
 ```
