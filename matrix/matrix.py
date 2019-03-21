@@ -1,4 +1,4 @@
-from safety import ensure_mul, ensure_add
+from .safety import ensure_mul, ensure_add
 
 
 def zeros(num_rows, num_cols):
@@ -13,9 +13,11 @@ class Matrix:
         self.entries = entries
 
     def __str__(self):
-        astr = '\n'
+        astr = '\n['
         for row in self.entries:
             astr += f'{str(row).replace(",", " ")}\n'
+        astr = astr[:-1]
+        astr += ']\n'
         return astr
 
     def __mul__(self, x):
@@ -85,6 +87,11 @@ class Matrix:
                 new[row_num][col_num] = self[row_num][col_num]*c
         return new
 
+    def zeros(self):
+        """
+        Returns a new matrix of the same size as self filled with 0's.
+        """
+        return zeros(len(self), len(self[0]))
 
 if __name__ == "__main__":
     mat = Matrix([[2, 2], [1, 1]])
