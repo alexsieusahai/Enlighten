@@ -1,5 +1,13 @@
-from primitives import Add, Multiply, Divide, Exponent
+from numbers import Number
 
+try:
+    from .primitives import Add, Multiply, Divide, Exponent
+except ImportError:
+    from primitives import Add, Multiply, Divide, Exponent
+
+import sys
+sys.path.append('..')
+from matrix import Matrix
 
 class Variable:
     def __init__(self, parent0, parent1=None, primitive=None, eager=True):
@@ -15,6 +23,9 @@ class Variable:
             
     def __str__(self):
         return str(self.value)
+
+    def __repr__(self):
+        return repr(self.value)
     
     def __neg__(self):
         return Variable(self, -1, Multiply())
@@ -71,4 +82,11 @@ class Variable:
         Returns the gradient of Variable with respect to variable, using the 
             position of the variable passed in in memory.
         """
+        if isinstance(var, Matrix):
+            mat = var.zeros()
+            for num_row in range(len(mat)):
+                for num_col in range(len(mat[0])):
+                    mat[num_row][num_col] = self.grad_dict[id(var[num_row][num_col])]
+            return mat
+
         return self.grad_dict[id(var)]
