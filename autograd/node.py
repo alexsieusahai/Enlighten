@@ -1,3 +1,4 @@
+from variable import Variable
 from primitives import Add, Multiply, Divide, Exponent
 
 
@@ -19,7 +20,7 @@ class Node:
         return Variable(node)
     
     def __neg__(self):
-        return 
+        return Node(self, -1, Multiply())
         
     def __add__(self, node):
         node = self.ensure_node(node)
