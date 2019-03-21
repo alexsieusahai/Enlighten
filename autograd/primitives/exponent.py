@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Exponent:
     def __init__(self):
         self.f = lambda x, y: x ** y
