@@ -15,6 +15,7 @@ Made almost exclusively for learning more about deep learning; very expressive, 
 ## What's on the immediate horizon?
 
 * Synatic sugar for feedforward networks.
+* Stochastic gradient descent.
 * `xor` example.
 * Graph cleanup as I walk through the recursion stack.
     * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
