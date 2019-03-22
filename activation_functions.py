@@ -7,3 +7,9 @@ def sigmoid(x):
     if isinstance(x, Matrix):
         return x.elementwise_apply(f)
     return f(x)
+
+def relu(x):
+    f = lambda x: x if x.value >= 0 else x*0
+    if isinstance(x, Matrix):
+        return x.elementwise_apply(f)
+    return f(x)
