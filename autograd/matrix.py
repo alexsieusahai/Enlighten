@@ -2,14 +2,17 @@ import numpy as np
 
 from .primitives import Abs
 from .variable import Variable
-from .safety import ensure_mul, ensure_add
+from .safety import ensure_mul, ensure_add, ensure_hadamard
 
-def zeros(num_rows, num_cols):
+def initialize_matrix(num_rows, num_cols, val):
     new = []
     for i in range(num_rows):
-            row = [Variable(0) for _ in range(num_cols)]
+            row = [Variable(val) for _ in range(num_cols)]
             new.append(row)
     return Matrix(new)
+
+def zeros(num_rows, num_cols):
+    return initialize_matrix(num_rows, num_cols, 0)
 
 class Matrix:
     def __init__(self, entries):
@@ -45,6 +48,9 @@ class Matrix:
                 ans[row_num][col_num] = self[row_num][col_num] + mat[row_num][col_num]
         return ans
 
+    def __sub__(self, mat):
+        return self.__add__(mat.scalarmul(-1))
+
     def __getitem__(self, idx):
         return self.entries[idx]
 
@@ -69,7 +75,7 @@ class Matrix:
         Matrix, matrix multiplication. 
         Assumes that mat0 and mat1 have the correct dimensionality.
         """
-        #ensure_correct_shape_for_multiplication(mat0, mat1)
+        ensure_mul(mat0, mat1)
         mat1_t = mat1.transpose()
         entries = zeros(len(mat0), len(mat1[0]))
         for row_num in range(len(mat0)):
@@ -84,10 +90,21 @@ class Matrix:
         """
         Scalar matrix multiplication.
         """
-        new = zeros(len(self), len(self[0]))
+        new = self.zeros()
         for row_num in range(len(self)):
             for col_num in range(len(self[0])):
                 new[row_num][col_num] = self[row_num][col_num]*c
+        return new
+
+    def hadamard(self, mat):
+        """
+        Elementwise multiplication with self and mat.
+        """
+        ensure_hadamard(self, mat)
+        new = self.zeros()
+        for row_num in range(len(self)):
+            for col_num in range(len(self[0])):
+                new[row_num][col_num] = self[row_num][col_num]*mat[row_num][col_num]
         return new
 
     def zeros(self):
@@ -95,6 +112,22 @@ class Matrix:
         Returns a new matrix of the same size as self filled with 0's.
         """
         return zeros(len(self), len(self[0]))
+
+    def initialize_matrix(self, val):
+        """
+        Returns a new matrix of the same size as self filled with val.
+        """
+        return initialize_matrix(len(self), len(self[0]), val)
+
+    def reset_grad(self):
+        """
+        Returns a new matrix, with reset Variable objects.
+        """
+        new = self.zeros()
+        for row_num in range(len(self)):
+            for col_num in range(len(self[0])):
+                new[row_num][col_num] = Variable(self[row_num][col_num].value)
+        return new
     
     def init_normal(self, mean=0, variance=1):
         """
@@ -128,11 +161,14 @@ class Matrix:
         for num_row in range(len(self)):
             for num_col in range(len(self[0])):
                 new[num_row][num_col] = f(self[num_row][num_col])
-
         return new
 
     def abs(self):
-        return self.elementwise_apply(Abs())
+        new = self.zeros()
+        for num_row in range(len(self)):
+            for num_col in range(len(self[0])):
+                new[num_row][num_col] = self[num_row][num_col].abs()
+        return new
 
 
 if __name__ == "__main__":
