@@ -14,12 +14,11 @@ Made almost exclusively for learning more about deep learning; very expressive, 
 * Optimizers
 	* Stochastic gradient descent
 	* Adam
+* Graph cleanup as I walk through the recursion stack.
+    * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
 
 ## What's on the immediate horizon?
 
-* Graph cleanup as I walk through the recursion stack.
-    * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
-    * This is actually a massive problem with any sort of recurrence, since the amount of memory it starts eating up over time is ridiculous.
 * Synatic sugar for feedforward networks.
 * `xor` example.
 * Model definition as function composition.
