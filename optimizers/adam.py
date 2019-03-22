@@ -7,22 +7,35 @@ class Adam:
         self.beta1 = beta1
         self.beta2 = beta2
         self.eps_val = eps
-        self.eps = None
-        self.m = None
-        self.v = None
-        self.t = 0
+        self.eps_dict = {}
+        self.t_dict = {}
+        self.m_dict = {} 
+        self.v_dict = {} 
 
     def step(self, x, x_grad):
-        self.t += 1
-        if self.m is None:
-            self.m = x_grad.zeros()
-            self.v = x_grad.zeros()
-            self.eps = x_grad.initialize_matrix(self.eps_val)
+        if id(x) not in self.t_dict:
+            self.t_dict[id(x)] = 0
+            self.m_dict[id(x)] = x_grad.zeros()
+            self.v_dict[id(x)] = x_grad.zeros()
+            self.eps_dict[id(x)] = x_grad.initialize_matrix(self.eps_val)
 
-        self.m = self.beta1 * self.m + (1-self.beta1) * x_grad
-        self.v = self.beta2 * self.v + (1-self.beta2) * x_grad.elementwise_apply(lambda x: x**2)
-        curr_alpha = self.alpha * ((1 - self.beta2**self.t)**0.5) / (1-self.beta1**self.t)
-        return x - curr_alpha * self.m.hadamard((self.v.elementwise_apply(lambda x: x**0.5) + self.eps).elementwise_apply(lambda x: 1 / x))
+        self.t_dict[id(x)] += 1
+
+        self.m_dict[id(x)] = self.beta1 * self.m_dict[id(x)] + (1-self.beta1) * x_grad
+        self.v_dict[id(x)] = self.beta2 * self.v_dict[id(x)] + (1-self.beta2) * x_grad.elementwise_apply(lambda x: x**2)
+        curr_alpha = self.alpha * ((1 - self.beta2**self.t_dict[id(x)])**0.5) / (1-self.beta1**self.t_dict[id(x)])
+        rescaled_params = x - curr_alpha * self.m_dict[id(x)].hadamard((self.v_dict[id(x)].elementwise_apply(lambda x: x**0.5) + self.eps_dict[id(x)]).elementwise_apply(lambda x: 1 / x))
+        self.t_dict[id(rescaled_params)] = self.t_dict[id(x)]
+        self.m_dict[id(rescaled_params)] = self.m_dict[id(x)]
+        self.v_dict[id(rescaled_params)] = self.v_dict[id(x)]
+        self.eps_dict[id(rescaled_params)] = self.eps_dict[id(x)]
+        del self.t_dict[id(x)]
+        del self.m_dict[id(x)]
+        del self.v_dict[id(x)]
+        del self.eps_dict[id(x)]
+
+        return rescaled_params
+        
 
 
 if __name__ == "__main__":
@@ -43,7 +56,7 @@ if __name__ == "__main__":
 
     target = zeros(1, 1)
     target[0][0] = 0.5
-    for _ in range(1000):
+    for _ in range(5000):
         f = sigmoid(W*x + b)
         output = (f - target).abs()
         if not (_ % 100):
