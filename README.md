@@ -6,7 +6,7 @@ Made almost exclusively for learning more about deep learning; very expressive, 
 
 * Automatic Differentiation
 * Naive matrix library
-    * Somewhat cache friendly matrix multiplication, addition (have to check this)
+    * Somewhat cache friendly matrix multiplication since I access the matrices row by row rather than column by column. Seems to give a nice boost empirically.
     * Implementation of matrix transpose
     * Normal initialization via numpy
 * Model definition as function composition
