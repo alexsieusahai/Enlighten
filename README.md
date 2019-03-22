@@ -1,21 +1,24 @@
-# Pax
-A deep learning library written in Python that aims on being able to express its architecture as beautifully as possible.  
-Made almost exclusively for learning more about deep learning; very expressive, natural code, but very slow.
+# Torchlite 
+A deep learning library written in Python that aims on being able to express deep learning as beautifully as possible.  
+Made almost exclusively for learning more about deep learning; very expressive, natural code, but (probably very) slow.
 
 ## What's implemented so far?
 
 * Automatic Differentiation
 * Naive matrix library
-    * Somewhat cache friendly matrix multiplication, addition
+    * Somewhat cache friendly matrix multiplication, addition (have to check this)
     * Implementation of matrix transpose
     * Normal initialization via numpy
 * Model definition as function composition
     * `f = sigmoid(W * x + b)` (a simple feedforward network) works; we can get the gradient of it just by doing `f.get_grad(W)`.
+* Optimizers
+	* Stochastic gradient descent
 
 ## What's on the immediate horizon?
 
+* Optimizers
+	* Adam
 * Synatic sugar for feedforward networks.
-* Stochastic gradient descent.
 * `xor` example.
 * Graph cleanup as I walk through the recursion stack.
     * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
