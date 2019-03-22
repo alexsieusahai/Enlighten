@@ -1,22 +1,29 @@
 # Pax
 A deep learning library written in Python that aims on being able to express its architecture as beautifully as possible.  
-Made almost exclusively for learning more about deep learning; no NumPy dependency, but very slow.
+Made almost exclusively for learning more about deep learning; very expressive, natural code, but very slow.
 
 ## What's implemented so far?
 
 * Automatic Differentiation
+* Naive matrix library
+    * Somewhat cache friendly matrix multiplication, addition
+    * Implementation of matrix transpose
+    * Normal initialization via numpy
+* Model definition as function composition
+    * `f = sigmoid(W * x + b)` (a simple feedforward network) works; we can get the gradient of it just by doing `f.get_grad(W)`.
 
 ## What's on the immediate horizon?
 
-* Model definition as function composition
-    * `x = Variable(inp); params = xavier_init_normal((inp_shape, outp_shape)); b = np.zeros(outp_shape); f = W * x + b` is what I'm thinking; I do not want to have the user learn anything about this library to use it, other than wrapping _just one function_ into a Variable before running.
-    * After, I can add model abstraction by defining synatic sugar for `feedforward`, for instance. 
+* Synatic sugar for feedforward networks.
+* `xor` example.
+* Graph cleanup as I walk through the recursion stack.
+    * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
+* Model definition as function composition.
+    * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them. I might consider destroying the graph as I go on, once I have the gradients, in order to make it extremely memory efficient.
 
 ## What needs to get done, but is not on the immediate horizon?
-* Model definition as function composition
-    * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them. I might consider destroying the graph as I go on, once I have the gradients, in order to make it extremely memory efficient.
-        * So, I'll need to have some kind of graph cleanup as I walk through the recursion stack; what I can do here is once I finish up the computations, I can delete the parents, since I'll never use them again.
-	* Defining convolutions to fit well into my automatic differentiation paradigm.
+* Defining convolutions to fit well into my automatic differentiation paradigm.
+* Usage examples solving common problems, such as MNIST.
 
 ## Autograd
 ### How does it work?
@@ -64,3 +71,7 @@ This will output the following, as expected.
 ```
 
 This is an extremely expressive and beautiful way of doing automatic differentiation, in my opinion. This forms the backbone of the deep learning library.
+
+## Naive Matrix Library
+### Why do this?
+If I drop down to NumPy, it's impossible for me to use Autograd; I suspect this is why in PyTorch that everything must be wrapped in its Tensor types.
