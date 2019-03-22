@@ -13,15 +13,15 @@ Made almost exclusively for learning more about deep learning; very expressive, 
     * `f = sigmoid(W * x + b)` (a simple feedforward network) works; we can get the gradient of it just by doing `f.get_grad(W)`.
 * Optimizers
 	* Stochastic gradient descent
+	* Adam
 
 ## What's on the immediate horizon?
 
-* Optimizers
-	* Adam
-* Synatic sugar for feedforward networks.
-* `xor` example.
 * Graph cleanup as I walk through the recursion stack.
     * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
+    * This is actually a massive problem with any sort of recurrence, since the amount of memory it starts eating up over time is ridiculous.
+* Synatic sugar for feedforward networks.
+* `xor` example.
 * Model definition as function composition.
     * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them. I might consider destroying the graph as I go on, once I have the gradients, in order to make it extremely memory efficient.
 
