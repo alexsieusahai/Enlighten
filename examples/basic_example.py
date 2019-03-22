@@ -1,14 +1,16 @@
 if __name__ == "__main__":
-    from activation_functions import sigmoid
+    import sys
+    sys.path.append('..')
     from autograd import Variable, Matrix, zeros
+    from activation_functions import sigmoid
 
-    W0 = zeros(2, 2)
+    W0 = zeros(200, 2)
     W0.init_normal()
 
-    b0 = zeros(2, 1)
+    b0 = zeros(200, 1)
     b0.init_normal()
 
-    W1 = zeros(1, 2)
+    W1 = zeros(1, 200)
     W1.init_normal()
 
     b1 = zeros(1, 1)
