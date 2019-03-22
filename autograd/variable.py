@@ -5,7 +5,7 @@ except ImportError:
 
 class Variable:
     def __init__(self, parent0, parent1=None, primitive=None, eager=True):
-        is_variable = parent1 is None
+        is_variable = primitive is None
         if not is_variable:
             self.parent0 = self.ensure_node(parent0)
             self.parent1 = self.ensure_node(parent1)
@@ -50,7 +50,7 @@ class Variable:
         return Variable(node, self, Exponent())
 
     def abs(self):
-        return Variable(self, None, Abs())
+        return Variable(self, 'a', Abs())
         
     def ensure_node(self, node):
         if isinstance(node, Variable):
@@ -70,9 +70,13 @@ class Variable:
         parent0_grad, parent1_grad = self.primitive.get_grad(self.parent0.compute(), self.parent1.compute())
         self.grad_dict = {}
         for key in self.parent0.grad_dict:
-            self.grad_dict[key] = self.parent0.grad_dict[key] * parent0_grad
+            self.grad_dict[key] = self.parent0.grad_dict[key] * parent0_grad if parent0_grad is not None else None
         for key in self.parent1.grad_dict:
-            self.grad_dict[key] = self.parent1.grad_dict[key] * parent1_grad
+            self.grad_dict[key] = self.parent1.grad_dict[key] * parent1_grad if parent1_grad is not None else None
+        if self.parent0.primitive is not None:
+            del self.parent0
+        if self.parent1.primitive is not None:
+            del self.parent1
             
     def get_grad(self, var):
         """
