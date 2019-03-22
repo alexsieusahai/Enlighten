@@ -1,5 +1,6 @@
 import numpy as np
 
+from .primitives import Abs
 from .variable import Variable
 from .safety import ensure_mul, ensure_add
 
@@ -129,6 +130,9 @@ class Matrix:
                 new[num_row][num_col] = f(self[num_row][num_col])
 
         return new
+
+    def abs(self):
+        return self.elementwise_apply(Abs())
 
 
 if __name__ == "__main__":

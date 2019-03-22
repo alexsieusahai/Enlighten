@@ -1,7 +1,7 @@
 try:
-    from .primitives import Add, Multiply, Divide, Exponent
+    from .primitives import Add, Multiply, Divide, Exponent, Abs
 except ImportError:
-    from primitives import Add, Multiply, Divide, Exponent
+    from primitives import Add, Multiply, Divide, Exponent, Abs
 
 class Variable:
     def __init__(self, parent0, parent1=None, primitive=None, eager=True):
@@ -48,6 +48,9 @@ class Variable:
     
     def __rpow__(self, node):
         return Variable(node, self, Exponent())
+
+    def abs(self):
+        return Variable(self, None, Abs())
         
     def ensure_node(self, node):
         if isinstance(node, Variable):
