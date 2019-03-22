@@ -12,6 +12,18 @@ class Adam:
         self.m_dict = {} 
         self.v_dict = {} 
 
+    def store_params(self, t, m, v, eps, new_id):
+        self.t_dict[new_id] = t
+        self.m_dict[new_id] = m
+        self.v_dict[new_id] = v
+        self.eps_dict[new_id] = eps
+
+    def delete_params(self, old_id):
+        del self.t_dict[old_id]
+        del self.m_dict[old_id]
+        del self.v_dict[old_id]
+        del self.eps_dict[old_id]
+
     def step(self, x, x_grad):
         if id(x) not in self.t_dict:
             self.t_dict[id(x)] = 0
@@ -21,18 +33,15 @@ class Adam:
 
         self.t_dict[id(x)] += 1
 
-        self.m_dict[id(x)] = self.beta1 * self.m_dict[id(x)] + (1-self.beta1) * x_grad
-        self.v_dict[id(x)] = self.beta2 * self.v_dict[id(x)] + (1-self.beta2) * x_grad.elementwise_apply(lambda x: x**2)
-        curr_alpha = self.alpha * ((1 - self.beta2**self.t_dict[id(x)])**0.5) / (1-self.beta1**self.t_dict[id(x)])
-        rescaled_params = x - curr_alpha * self.m_dict[id(x)].hadamard((self.v_dict[id(x)].elementwise_apply(lambda x: x**0.5) + self.eps_dict[id(x)]).elementwise_apply(lambda x: 1 / x))
-        self.t_dict[id(rescaled_params)] = self.t_dict[id(x)]
-        self.m_dict[id(rescaled_params)] = self.m_dict[id(x)]
-        self.v_dict[id(rescaled_params)] = self.v_dict[id(x)]
-        self.eps_dict[id(rescaled_params)] = self.eps_dict[id(x)]
-        del self.t_dict[id(x)]
-        del self.m_dict[id(x)]
-        del self.v_dict[id(x)]
-        del self.eps_dict[id(x)]
+        t, m, v, eps = self.t_dict[id(x)], self.m_dict[id(x)], self.v_dict[id(x)], self.eps_dict[id(x)]
+
+        m = self.beta1 * m + (1-self.beta1) * x_grad
+        v = self.beta2 * v + (1-self.beta2) * x_grad.elementwise_apply(lambda x: x**2)
+        curr_alpha = self.alpha * ((1 - self.beta2**t)**0.5) / (1-self.beta1**t)
+        rescaled_params = x - curr_alpha * m.hadamard((v.elementwise_apply(lambda x: x**0.5) + eps).elementwise_apply(lambda x: 1 / x))
+
+        self.store_params(t, m, v, eps, id(rescaled_params))
+        self.delete_params(id(x))
 
         return rescaled_params
         
