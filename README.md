@@ -19,6 +19,7 @@ Made almost exclusively for learning more about deep learning; very expressive, 
 
 ## What's on the immediate horizon?
 
+* Addition of minibatching.
 * Synatic sugar for feedforward networks.
 * `xor` example.
 * Model definition as function composition.
@@ -34,7 +35,7 @@ For every single function, we can consider it as a composition of primitive func
 
 What this implementation of autograd does is it starts at the output node, and it walks through the computational subgraph of one of its children, until it hits a node. Then, that node finally returns the identity function and the corresponding derivative (1), and then we can compute the derivative of a given node with respect to its immediate children, and finally by chain rule, we can obtain the derivative of the goal node with respect to any of the inputs. We do this by keeping track of each variable in a dictionary holding all of the gradients, where the keys are the locations of the Variables in memory. 
 
-We store the value of each node, and (**not implemented yet, but it's on the horizon**) we delete the old intermediate nodes once we have no use for them anymore, sparing only the variables, so that they keep their locations in memory.
+We store the value of each node, and we delete the old intermediate nodes once we have no use for them anymore, sparing only the variables, so that they keep their locations in memory.
 ### Usage examples
 
 Demonstration of autograd to find point derivative of sigmoid (current path is in autograd folder):
