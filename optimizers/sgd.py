@@ -1,27 +1,16 @@
-class SGD:
+from optimizer import Optimizer
+
+
+class SGD(Optimizer):
     """
     Implementation of SGD with momentum.
     """
     def __init__(self, alpha: int, beta: int=0, minibatch_size: int=1):
+        super().__init__(minibatch_size)
         self.alpha = alpha
         self.beta = beta
         self.last_scaled_grad_dict = {}
-        self.minibatch_size = minibatch_size
         self.reset_minibatch_grad()
-
-    def reset_minibatch_grad(self):
-        self.curr_size = 0
-        self.avg_x_grad = None
-
-    def accumulate_minibatch_grad(self, x_grad):
-        self.curr_size += 1
-        if self.avg_x_grad is None:
-            self.avg_x_grad = x_grad
-        else:
-            self.avg_x_grad += x_grad / self.minibatch_size
-
-    def minibatch_accumulated(self):
-        return self.curr_size == self.minibatch_size
 
     def step(self, x, x_grad):
         self.accumulate_minibatch_grad(x_grad)
