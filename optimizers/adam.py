@@ -1,4 +1,7 @@
-from optimizer import Optimizer
+try:
+    from .optimizer import Optimizer
+except ImportError:
+    from optimizer import Optimizer
 
 
 class Adam(Optimizer):
