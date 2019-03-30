@@ -1,6 +1,5 @@
-# Torchlite 
-A deep learning library written in Python that aims on being able to express deep learning as beautifully as possible.  
-Made almost exclusively for learning more about deep learning; very expressive, natural code, but (probably very) slow.
+# Enlighten
+How far can we push autodiff? Can we make a fully functioning (albeit, _really_ slow) very customizable general machine learning library using just autodiff and synatic sugar?
 
 ## What's implemented so far?
 
@@ -78,4 +77,4 @@ This is an extremely expressive and beautiful way of doing automatic differentia
 
 ## Naive Matrix Library
 ### Why do this?
-If I drop down to NumPy, it's impossible for me to use Autograd; I suspect this is why in PyTorch that everything must be wrapped in its Tensor types.
+If I drop down to NumPy, it's impossible for me to use Autograd; I suspect this is why in PyTorch that everything must be wrapped in its Tensor types. This makes everything ridiculously slow, but I'm not sure about an easy workaround at the moment. For the toy problems that this library will be used on, this will be fine.
