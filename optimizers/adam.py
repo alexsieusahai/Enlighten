@@ -39,6 +39,7 @@ class Adam:
         v = self.beta2 * v + (1-self.beta2) * x_grad.elementwise_apply(lambda x: x**2)
         curr_alpha = self.alpha * ((1 - self.beta2**t)**0.5) / (1-self.beta1**t)
         rescaled_params = x - curr_alpha * m.hadamard((v.elementwise_apply(lambda x: x**0.5) + eps).elementwise_apply(lambda x: 1 / x))
+        rescaled_params = rescaled_params.reset_grad()
 
         self.store_params(t, m, v, eps, id(rescaled_params))
         self.delete_params(id(x))
@@ -71,5 +72,4 @@ if __name__ == "__main__":
         if not (_ % 100):
             print(output)
         W = optimizer.step(W, output.get_grad(W))
-        W = W.reset_grad()
     print(f'Final output is {output}')

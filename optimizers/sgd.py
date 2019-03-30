@@ -13,7 +13,7 @@ class SGD:
 
         scaled_grad = self.beta * self.last_scaled_grad_dict[id(x)] + self.alpha * x_grad
         rescaled_params = x - scaled_grad
-        rescaled_params.reset_grad()
+        rescaled_params = rescaled_params.reset_grad()
         del self.last_scaled_grad_dict[id(x)]
         self.last_scaled_grad_dict[id(rescaled_params)] = scaled_grad
         return rescaled_params
