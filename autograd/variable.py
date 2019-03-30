@@ -27,6 +27,11 @@ class Variable:
     def __add__(self, node):
         node = self.ensure_node(node)
         return Variable(self, node, Add())
+
+    def __sub__(self, node):
+        node = self.ensure_node(node)
+        node = node * -1
+        return self + node
     
     def __radd__(self, node):
         return Variable(node, self, Add())
@@ -84,3 +89,6 @@ class Variable:
             position of the variable passed in in memory.
         """
         return self.grad_dict[id(var)]
+
+    def reset_grad(self):
+        self.grad_dict = {id(self): 1}
