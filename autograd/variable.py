@@ -91,3 +91,4 @@ class Variable:
 
     def reset_grad(self):
         self.grad_dict = {id(self): 1}
+        return self

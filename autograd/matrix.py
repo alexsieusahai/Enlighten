@@ -66,6 +66,9 @@ class Matrix:
     def __len__(self):
         return len(self.entries)
 
+    def __pow__(self, exponent):
+        return self.elementwise_apply(lambda x: x**exponent)
+
     def transpose(self):
         """
         Implements the transpose operation, on self.entries.
@@ -73,10 +76,16 @@ class Matrix:
         Very cache inefficient.
         """
         old_entries = self.entries
-        new = zeros(len(old_entries[0]), len(old_entries))
+        try:
+            new = zeros(len(old_entries[0]), len(old_entries))
+        except TypeError:
+            new = zeros(1, len(old_entries))
         for row_num in range(len(old_entries)):
-            for col_num in range(len(old_entries[0])):
-                new[col_num][row_num] = old_entries[row_num][col_num]
+            try:
+                for col_num in range(len(old_entries[0])):
+                    new[col_num][row_num] = old_entries[row_num][col_num]
+            except TypeError:
+                new[0][row_num] = old_entries[row_num]
         return new
 
     def matmul(self, mat0, mat1):
@@ -85,14 +94,13 @@ class Matrix:
         Assumes that mat0 and mat1 have the correct dimensionality.
         """
         ensure_mul(mat0, mat1)
-        #mat1_t = mat1.transpose()
+        mat1_t = mat1.transpose()
         entries = zeros(len(mat0), len(mat1[0]))
         for row_num in range(len(mat0)):
             for col_num in range(len(mat1[0])):
                 val = 0
                 for entry_id in range(len(mat0[row_num])):
-                    #val += mat0[row_num][entry_id] * mat1_t[col_num][entry_id]
-                    val += mat0[row_num][entry_id] * mat1[entry_id][col_num]
+                    val += mat0[row_num][entry_id] * mat1_t[col_num][entry_id]
                 entries[row_num][col_num] = val
         return entries
 
