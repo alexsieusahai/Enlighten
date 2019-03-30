@@ -2,21 +2,43 @@ class SGD:
     """
     Implementation of SGD with momentum.
     """
-    def __init__(self, alpha: int, beta: int=0):
+    def __init__(self, alpha: int, beta: int=0, minibatch_size: int=1):
         self.alpha = alpha
         self.beta = beta
         self.last_scaled_grad_dict = {}
+        self.minibatch_size = minibatch_size
+        self.reset_minibatch_grad()
+
+    def reset_minibatch_grad(self):
+        self.curr_size = 0
+        self.avg_x_grad = None
+
+    def accumulate_minibatch_grad(self, x_grad):
+        self.curr_size += 1
+        if self.avg_x_grad is None:
+            self.avg_x_grad = x_grad
+        else:
+            self.avg_x_grad += x_grad / self.minibatch_size
+
+    def minibatch_accumulated(self):
+        return self.curr_size == self.minibatch_size
 
     def step(self, x, x_grad):
-        if id(x) not in self.last_scaled_grad_dict:
-            self.last_scaled_grad_dict[id(x)] = x_grad
+        self.accumulate_minibatch_grad(x_grad)
+        if self.minibatch_accumulated():
+            if id(x) not in self.last_scaled_grad_dict:
+                self.last_scaled_grad_dict[id(x)] = x_grad
 
-        scaled_grad = self.beta * self.last_scaled_grad_dict[id(x)] + self.alpha * x_grad
-        rescaled_params = x - scaled_grad
-        rescaled_params = rescaled_params.reset_grad()
-        del self.last_scaled_grad_dict[id(x)]
-        self.last_scaled_grad_dict[id(rescaled_params)] = scaled_grad
-        return rescaled_params
+            scaled_grad = self.beta * self.last_scaled_grad_dict[id(x)] + self.alpha * self.avg_x_grad
+            rescaled_params = x - scaled_grad
+            rescaled_params = rescaled_params.reset_grad()
+            del self.last_scaled_grad_dict[id(x)]
+            self.last_scaled_grad_dict[id(rescaled_params)] = scaled_grad
+
+            self.reset_minibatch_grad()
+            return rescaled_params
+
+        return x
 
 
 if __name__ == "__main__":

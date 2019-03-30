@@ -57,22 +57,22 @@ class LinearRegression:
             self.params = optimizer.step(self.params, loss.get_grad(self.params))
 
 
-    def predict(self, test_loader: DataLoader) -> List[Variable]:
+    def predict(self, X: Matrix) -> Matrix:
         """
         Given X, returns a list of predictions for X.
         """
-        return [self._evaluate(X) for X in test_loader]
+        return self._evaluate(X)
 
 if __name__ == "__main__":
-    true_params = [0.3, 10, 5.4]
+    true_params = [0.3, 3, 5.4]
     f = lambda row: sum([row[i] * true_params[i] for i in range(len(row))])
     X = []
     y = []
-    for _ in range(1000):
+    for _ in range(5000):
         X.append([random.random() for _ in range(3)])
-        y.append(f(X[-1]))
+        y.append([f(X[-1])])
 
-    loader = DataLoader(X, y, minibatch_size=1)
+    loader = DataLoader(X, y)
 
     linreg = LinearRegression()
     linreg.fit(loader)
@@ -82,7 +82,5 @@ if __name__ == "__main__":
     for _ in range(10):
         X_test.append([random.random() for _ in range(3)])
 
-    test_loader = DataLoader(X_test)
-    outputs = linreg.predict(test_loader)
-    for output in outputs:
-        print(output[0][0].value)
+    outputs = linreg.predict(Matrix(X_test))
+    print(outputs)
