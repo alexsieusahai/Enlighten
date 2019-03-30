@@ -188,6 +188,13 @@ class Matrix:
                 new[num_row][num_col] = self[num_row][num_col].abs()
         return new
 
+    def log(self):
+        new = self.zeros()
+        for num_row in range(len(self)):
+            for num_col in range(len(self[0])):
+                new[num_row][num_col] = self[num_row][num_col].log()
+        return new
+
 
 if __name__ == "__main__":
     mat = Matrix([[2, 2], [1, 1]])
