@@ -203,7 +203,9 @@ class Matrix:
         for num_row in range(len(self)):
             for num_col in range(len(self[0])):
                 output += self[num_row][num_col]
-        return output
+        new = zeros(1, 1)
+        new[0][0] = output
+        return new
 
     def mean(self):
         """
