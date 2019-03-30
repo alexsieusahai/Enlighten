@@ -195,6 +195,22 @@ class Matrix:
                 new[num_row][num_col] = self[num_row][num_col].log()
         return new
 
+    def sum(self):
+        """
+        Returns the sum over every single element in self.
+        """
+        output = 0
+        for num_row in range(len(self)):
+            for num_col in range(len(self[0])):
+                output += self[num_row][num_col]
+        return output
+
+    def mean(self):
+        """
+        Returns the mean value over every single element in self.
+        """
+        return self.sum() / (len(self) * len(self[0]))
+
 
 if __name__ == "__main__":
     mat = Matrix([[2, 2], [1, 1]])
