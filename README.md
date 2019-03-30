@@ -17,13 +17,13 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 * Graph cleanup as I walk through the recursion stack.
     * After I pass a Variable which I know I will never use again, why keep it? Lets `del`ete it and move on.
 * LinearRegression object, and the basic interface for models
-* DataLoader object
+* DataLoader object (handles minibatching)
+* Common loss functions (MSE, MAE, CrossEntropy)
 
 ## What's on the immediate horizon?
 
-* Common loss functions
 * Logistic regression
-* Addition of minibatching.
+* Decision Tree Regression / Classification
 * Synatic sugar for feedforward networks.
 * `xor` example.
 * Model definition as function composition.
