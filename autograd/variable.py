@@ -14,7 +14,6 @@ class Variable:
         self.grad_dict = {id(self): 1}
         if eager:
             self.value = self.compute()
-            
     def __str__(self):
         return str(self.value)
 
