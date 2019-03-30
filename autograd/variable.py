@@ -77,9 +77,12 @@ class Variable:
         parent0_grad, parent1_grad = self.primitive.get_grad(self.parent0.compute(), self.parent1.compute())
         self.grad_dict = {}
         for key in self.parent0.grad_dict:
-            self.grad_dict[key] = self.parent0.grad_dict[key] * parent0_grad if parent0_grad is not None else None
+            if self.parent0.grad_dict[key] is not None:
+                self.grad_dict[key] = self.parent0.grad_dict[key] * parent0_grad if parent0_grad is not None else None
         for key in self.parent1.grad_dict:
-            self.grad_dict[key] = self.parent1.grad_dict[key] * parent1_grad if parent1_grad is not None else None
+            if self.parent1.grad_dict[key] is not None:
+                self.grad_dict[key] = self.parent1.grad_dict[key] * parent1_grad if parent1_grad is not None else None
+
         if self.parent0.primitive is not None:
             del self.parent0
         if self.parent1.primitive is not None:
