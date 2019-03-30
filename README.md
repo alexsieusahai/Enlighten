@@ -1,5 +1,6 @@
 # Enlighten
-How far can we push autodiff? Can we make a fully functioning (albeit, _really_ slow) very customizable general machine learning library using just autodiff and synatic sugar?
+Most of supervised learning seems to be about postulating that the dataset's output fits to some kind of manifold with respect to its inputs, modelling that manifold using some variables, then optimizing either the likelihood of the data given the model or vice versa. The driving horse seems to be differentiation, with a couple notable exceptions (a good one is SVMs being optimized by quadratic programming techniques).  
+How far can we push autodiff? Can we make a fully functioning (albeit, _really_ slow) very customizable general supervised learning library using (mostly) just autodiff and synatic sugar?
 
 ## What's implemented so far?
 
