@@ -1,8 +1,14 @@
 import numpy as np
 
-from .primitives import Abs
-from .variable import Variable
-from .safety import ensure_mul, ensure_add, ensure_hadamard
+try:
+    from .primitives import Abs
+    from .variable import Variable
+    from .safety import ensure_mul, ensure_add, ensure_hadamard
+except ModuleNotFoundError:
+    from primitives import Abs
+    from variable import Variable
+    from safety import ensure_mul, ensure_add, ensure_hadamard
+
 
 def initialize_matrix(num_rows, num_cols, val):
     new = []
@@ -54,6 +60,9 @@ class Matrix:
     def __getitem__(self, idx):
         return self.entries[idx]
 
+    def __setitem__(self, idx, val):
+        self.entries[idx] = val
+
     def __len__(self):
         return len(self.entries)
 
@@ -76,13 +85,14 @@ class Matrix:
         Assumes that mat0 and mat1 have the correct dimensionality.
         """
         ensure_mul(mat0, mat1)
-        mat1_t = mat1.transpose()
+        #mat1_t = mat1.transpose()
         entries = zeros(len(mat0), len(mat1[0]))
         for row_num in range(len(mat0)):
             for col_num in range(len(mat1[0])):
                 val = 0
                 for entry_id in range(len(mat0[row_num])):
-                    val += mat0[row_num][entry_id] * mat1_t[col_num][entry_id]
+                    #val += mat0[row_num][entry_id] * mat1_t[col_num][entry_id]
+                    val += mat0[row_num][entry_id] * mat1[entry_id][col_num]
                 entries[row_num][col_num] = val
         return entries
 
@@ -183,3 +193,19 @@ if __name__ == "__main__":
     other_mat = Matrix([[1, 2, 3], [4, 5, 6]])
     print(mat * other_mat)
     print(10 * mat)
+
+    import time
+
+    A_vals = []
+    for _ in range(300):
+        A_vals.append(list(np.random.rand(600)))
+    A = Matrix(A_vals)
+
+    B_vals = []
+    for _ in range(600):
+        B_vals.append(list(np.random.rand(500)))
+    B = Matrix(B_vals)
+
+    start_time = time.time()
+    A * B
+    print(time.time() - start_time)
