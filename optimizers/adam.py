@@ -51,7 +51,7 @@ if __name__ == "__main__":
     import sys
     sys.path.append('..')
     sys.path.append('../autograd')
-    from autograd import Variable, zeros
+    from autograd import Variable, zeros, Matrix
     from activation_functions import sigmoid
 
     W = zeros(1, 2)
