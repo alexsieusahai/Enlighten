@@ -23,7 +23,7 @@ def zeros(num_rows, num_cols):
     return initialize_matrix(num_rows, num_cols, 0)
 
 class Matrix:
-    def __init__(self, entries):
+    def __init__(self, entries=[]):
         self.entries = entries
 
     def __str__(self):
@@ -61,7 +61,7 @@ class Matrix:
 
     def __getitem__(self, idx):
         if isinstance(idx, int):
-            return self.entries[idx]
+            return Matrix(self.entries[idx])
         output = []
         for i in idx:
             output.append(self[i])
@@ -254,6 +254,12 @@ class Matrix:
         axis=1 corresponds to columns (ie, a row vector with the max of column i at entry i).
         """
         return self.rowwise_apply(min) if axis == 0 else self.columnwise_apply(min)
+
+    def append(self, row):
+        """
+        Appends the row to the matrix.
+        """
+        self.entries.append(row)
 
 
 if __name__ == "__main__":
