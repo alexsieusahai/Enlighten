@@ -6,7 +6,7 @@ class Exponent:
         pass
         
     def __call__(self, f, g):
-        return f ** g
+        return g ** f
     
     def get_grad(self, f, f_prime, g, g_prime):
         if f_prime is None or g_prime is None:
