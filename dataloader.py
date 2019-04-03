@@ -19,3 +19,6 @@ class DataLoader:
     def __iter__(self):
         for i in range(len(self.X)):
             yield Matrix([self.X[i]]), Matrix([self.y[i]])
+
+    def __len__(self):
+        return len(self.X)
