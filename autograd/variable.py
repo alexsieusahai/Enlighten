@@ -81,7 +81,7 @@ class Variable:
                 grad = self.primitive.get_grad(parent0_val, self.parent0.grad_dict.get(key, 0), parent1_val, self.parent1.grad_dict.get(key, 0))
                 if grad_dict[key] is not None:
                     self.grad_dict[key] = grad 
-
+        
         update_grad(self.parent0.grad_dict)
         update_grad(self.parent1.grad_dict)
 
@@ -131,5 +131,5 @@ if __name__ == "__main__":
     f = (x**2).log()
     assert f.get_grad(x) == 2 / 3
 
-    f = np.e**x
-    assert f.get_grad(x) == np.e**3
+    f = 1 / (1 + np.e**(-1 * (3*x + 5)))
+    assert abs(f.get_grad(x) - 2.494582e-6) < 0.0001
