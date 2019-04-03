@@ -1,8 +1,8 @@
 import numpy as np
 
-from typing import Tuple
+from typing import Tuple, Callable
 
-try:
+try: 
     from .primitives import Abs
     from .variable import Variable
     from .safety import ensure_mul, ensure_add, ensure_hadamard
@@ -172,7 +172,7 @@ class Matrix:
                 grad[num_row][num_col] = self[0][0].grad_dict[id(mat[num_row][num_col])]
         return grad
 
-    def elementwise_apply(self, f):
+    def elementwise_apply(self, f: Callable):
         """
         Assumes f is a function of one variable.
         Applies f to each entry in the matrix.
@@ -221,19 +221,55 @@ class Matrix:
         """
         return (len(self), len(self[0]))
 
+    def rowwise_apply(self, f: Callable):
+        output = []
+        for row in self:
+            output.append([f(row)])
+        return Matrix(output)
+
+    def columnwise_apply(self, f: Callable):
+        """
+        Applies f to to each column in self.
+        """
+        mat = self.transpose()
+        return mat.rowwise_apply(f).transpose()
+
+    def max(self, axis: int):
+        """
+        :param axis: The axis for which we should get the maximum of.
+        axis=0 corresponds to rows (ie, a column vector with the max of row i at entry i).
+        axis=1 corresponds to columns (ie, a row vector with the max of column i at entry i).
+        """
+        return self.rowwise_apply(max) if axis == 0 else self.columnwise_apply(max)
+
+    def min(self, axis: int):
+        """
+        :param axis: The axis for which we should get the minimum of.
+        axis=0 corresponds to rows (ie, a column vector with the max of row i at entry i).
+        axis=1 corresponds to columns (ie, a row vector with the max of column i at entry i).
+        """
+        return self.rowwise_apply(min) if axis == 0 else self.columnwise_apply(min)
+
 
 if __name__ == "__main__":
     mat = Matrix([[2, 2], [1, 1]])
-    mat_t = mat.transpose()
-    print(mat)
-    print(mat_t)
-    mul = mat * mat
-    print(mul)
-    add = mat + mat
-    print(add)
     other_mat = Matrix([[1, 2, 3], [4, 5, 6]])
-    print(mat * other_mat)
-    print(10 * mat)
+    eval_list = [
+            'mat',
+            'mat.transpose()',
+            'mat * mat',
+            'mat + mat',
+            '10 * mat',
+            'other_mat',
+            'other_mat.max(axis=0)',
+            'other_mat.max(axis=1)',
+            'other_mat.min(axis=0)',
+            'other_mat.min(axis=1)',
+            ]
+
+    for expr in eval_list:
+        print(expr)
+        print(eval(expr))
 
     import time
 
