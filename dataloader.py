@@ -12,13 +12,18 @@ class DataLoader:
         """
         self.X = X
         self.y = y
+        self.i = 0
         if y is not None and len(X) != len(y):
             print('The lengths of X and y passed into DataLoader do not agree.')
             raise ValueError
 
     def __iter__(self):
-        for i in range(len(self.X)):
-            yield Matrix([self.X[i]]), Matrix([self.y[i]])
+        while self.i < len(self.X):
+            yield Matrix([self.X[self.i]]), Matrix([self.y[self.i]])
+            self.i += 1
 
     def __len__(self):
         return len(self.X)
+
+    def peek(self):
+        return Matrix([self.X[self.i]]), Matrix([self.y[self.i]])
