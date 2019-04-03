@@ -38,7 +38,7 @@ class LinearRegression:
         """
         Returns the sum of the l1 and l2 norms of the parameters, scaled by alpha and beta.
         """
-        return Matrix([[self.alpha]]) * self.params.sum() + self.beta * (self.params**2).sum()
+        return self.alpha * self.params.sum() + self.beta * (self.params**2).sum()
 
     def fit(self, loader: DataLoader, optimizer=None, loss_function=None) -> None:
         """
@@ -71,4 +71,3 @@ class LinearRegression:
         for row in X:
             preds.append(self._evaluate(Matrix([row]))[0])
         return Matrix(preds)
-
