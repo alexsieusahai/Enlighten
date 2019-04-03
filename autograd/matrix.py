@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import numpy as np
 
 from typing import Tuple
@@ -12,14 +14,14 @@ except ModuleNotFoundError:
     from safety import ensure_mul, ensure_add, ensure_hadamard
 
 
-def initialize_matrix(num_rows, num_cols, val) -> Matrix:
+def initialize_matrix(num_rows, num_cols, val):
     new = []
     for i in range(num_rows):
             row = [Variable(val) for _ in range(num_cols)]
             new.append(row)
     return Matrix(new)
 
-def zeros(num_rows, num_cols) -> Matrix:
+def zeros(num_rows, num_cols):
     return initialize_matrix(num_rows, num_cols, 0)
 
 class Matrix:
@@ -34,7 +36,7 @@ class Matrix:
         astr += ']\n'
         return astr
 
-    def __mul__(self, x) -> Matrix:
+    def __mul__(self, x):
         if isinstance(x, type(self)):
             ensure_mul(self, x)
             return self.matmul(self, x)
@@ -71,7 +73,7 @@ class Matrix:
     def __pow__(self, exponent):
         return self.elementwise_apply(lambda x: x**exponent)
 
-    def transpose(self) -> Matrix:
+    def transpose(self):
         """
         Implements the transpose operation, on self.entries.
         Does not do the transpose in place.
@@ -90,7 +92,7 @@ class Matrix:
                 new[0][row_num] = old_entries[row_num]
         return new
 
-    def matmul(self, mat0, mat1) -> Matrix:
+    def matmul(self, mat0, mat1):
         """
         Matrix, matrix multiplication. 
         Assumes that mat0 and mat1 have the correct dimensionality.
@@ -106,7 +108,7 @@ class Matrix:
                 entries[row_num][col_num] = val
         return entries
 
-    def scalarmul(self, c) -> Matrix:
+    def scalarmul(self, c):
         """
         Scalar matrix multiplication.
         """
@@ -116,7 +118,7 @@ class Matrix:
                 new[row_num][col_num] = self[row_num][col_num]*c
         return new
 
-    def hadamard(self, mat) -> Matrix:
+    def hadamard(self, mat):
         """
         Elementwise multiplication with self and mat.
         """
@@ -127,19 +129,19 @@ class Matrix:
                 new[row_num][col_num] = self[row_num][col_num]*mat[row_num][col_num]
         return new
 
-    def zeros(self) -> Matrix:
+    def zeros(self):
         """
         Returns a new matrix of the same size as self filled with 0's.
         """
         return zeros(len(self), len(self[0]))
 
-    def initialize_matrix(self, val) -> Matrix:
+    def initialize_matrix(self, val):
         """
         Returns a new matrix of the same size as self filled with val.
         """
         return initialize_matrix(len(self), len(self[0]), val)
 
-    def reset_grad(self) -> Matrix:
+    def reset_grad(self):
         """
         Returns a new matrix, with reset Variable objects.
         """
@@ -149,7 +151,7 @@ class Matrix:
                 new[row_num][col_num] = Variable(self[row_num][col_num].value)
         return new
     
-    def init_normal(self, mean=0, variance=1) -> Matrix:
+    def init_normal(self, mean=0, variance=1):
         """
         Fills its entries with samples from a normal distribution.
         """
@@ -172,7 +174,7 @@ class Matrix:
                 grad[num_row][num_col] = self[0][0].grad_dict[id(mat[num_row][num_col])]
         return grad
 
-    def elementwise_apply(self, f) -> Matrix:
+    def elementwise_apply(self, f):
         """
         Assumes f is a function of one variable.
         Applies f to each entry in the matrix.
@@ -183,21 +185,21 @@ class Matrix:
                 new[num_row][num_col] = f(self[num_row][num_col])
         return new
 
-    def abs(self) -> Matrix:
+    def abs(self):
         new = self.zeros()
         for num_row in range(len(self)):
             for num_col in range(len(self[0])):
                 new[num_row][num_col] = self[num_row][num_col].abs()
         return new
 
-    def log(self) -> Matrix:
+    def log(self):
         new = self.zeros()
         for num_row in range(len(self)):
             for num_col in range(len(self[0])):
                 new[num_row][num_col] = self[num_row][num_col].log()
         return new
 
-    def sum(self) -> Matrix:
+    def sum(self):
         """
         Returns the sum over every single element in self.
         """
@@ -209,7 +211,7 @@ class Matrix:
         new[0][0] = output
         return new
 
-    def mean(self) -> Matrix:
+    def mean(self):
         """
         Returns the mean value over every single element in self.
         """
