@@ -5,13 +5,15 @@ from ..linear_models import LinearRegression
 from ..dataloader import DataLoader
 from ..optimizers import SGD
 
+
 def test_linreg():
-    true_params = [0.3, 3, 5.4]
+    num_cols = 10
+    true_params = [i for i in range(num_cols)]
     f = lambda row: sum([row[i] * true_params[i] for i in range(len(row))]) + 3
     X = []
     y = []
-    for _ in range(10000): 
-        X.append([random.random() for _ in range(3)])
+    for _ in range(30000): 
+        X.append([random.random() for _ in range(num_cols)])
         y.append([f(X[-1])])
 
     loader = DataLoader(X, y)
@@ -30,7 +32,7 @@ def test_linreg():
     X_test = []
     y_test = []
     for _ in range(10):
-        X_test.append([random.random() for _ in range(3)])
+        X_test.append([random.random() for _ in range(num_cols)])
         y_test.append(f(X_test[-1]))
 
     outputs = linreg.predict(Matrix(X_test))
