@@ -60,7 +60,12 @@ class Matrix:
         return self.__add__(mat.scalarmul(-1))
 
     def __getitem__(self, idx):
-        return self.entries[idx]
+        if isinstance(idx, int):
+            return self.entries[idx]
+        output = []
+        for i in idx:
+            output.append(self[i])
+        return Matrix(output)
 
     def __setitem__(self, idx, val):
         self.entries[idx] = val
@@ -254,6 +259,7 @@ class Matrix:
 if __name__ == "__main__":
     mat = Matrix([[2, 2], [1, 1]])
     other_mat = Matrix([[1, 2, 3], [4, 5, 6]])
+    inds = [0, 1]
     eval_list = [
             'mat',
             'mat.transpose()',
@@ -265,24 +271,27 @@ if __name__ == "__main__":
             'other_mat.max(axis=1)',
             'other_mat.min(axis=0)',
             'other_mat.min(axis=1)',
+            'inds',
+            'other_mat[inds]'
             ]
 
     for expr in eval_list:
         print(expr)
         print(eval(expr))
 
-    import time
+    def time_test():
+        import time
 
-    A_vals = []
-    for _ in range(300):
-        A_vals.append(list(np.random.rand(600)))
-    A = Matrix(A_vals)
+        A_vals = []
+        for _ in range(300):
+            A_vals.append(list(np.random.rand(600)))
+        A = Matrix(A_vals)
 
-    B_vals = []
-    for _ in range(600):
-        B_vals.append(list(np.random.rand(500)))
-    B = Matrix(B_vals)
+        B_vals = []
+        for _ in range(600):
+            B_vals.append(list(np.random.rand(500)))
+        B = Matrix(B_vals)
 
-    start_time = time.time()
-    A * B
-    print(time.time() - start_time)
+        start_time = time.time()
+        A * B
+        print(time.time() - start_time)
