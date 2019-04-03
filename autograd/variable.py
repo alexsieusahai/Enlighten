@@ -51,7 +51,31 @@ class Variable:
 
     def __rpow__(self, node):
         return Variable(self, node, Exponent())
+
+    def __lt__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value < node
+
+    def __le__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value <= node
+
+    def __gt__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value > node
+
+    def __ge__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value >= node
+
+    def __eq__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value == node
     
+    def __ne__(self, node):
+        val = node.value if isinstance(node, Variable) else node
+        return self.value == node
+
     def abs(self):
         return Variable(self, 'a', Abs())
 
