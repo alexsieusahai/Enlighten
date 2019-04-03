@@ -1,9 +1,11 @@
 class Add:
     def __init__(self):
-        self.f = lambda x, y: x + y
+        pass
         
-    def __call__(self, x, y):
-        return self.f(x, y)
+    def __call__(self, f, g):
+        return f + g
     
-    def get_grad(self, x, y):
-        return (1, 1)
+    def get_grad(self, f, f_prime, g, g_prime):
+        if f_prime is None or g_prime is None:
+            return None
+        return f_prime + g_prime

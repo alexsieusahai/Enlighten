@@ -1,9 +1,9 @@
 try:
-    from .primitives import Add, Multiply, Divide, Exponent, Abs, Log
+    from .primitives import Add, Multiply, Divide, Pow, Abs, Log, Exponent
 except ImportError:
-    from primitives import Add, Multiply, Divide, Exponent, Abs, Log
+    from primitives import Add, Multiply, Divide, Pow, Abs, Log, Exponent
 
-class Variable:
+class Variable: 
     def __init__(self, parent0, parent1=None, primitive=None, eager=True):
         is_variable = primitive is None
         if not is_variable:
@@ -14,6 +14,7 @@ class Variable:
         self.grad_dict = {id(self): 1}
         if eager:
             self.value = self.compute()
+
     def __str__(self):
         return str(self.value)
 
@@ -24,11 +25,9 @@ class Variable:
         return Variable(self, -1, Multiply())
         
     def __add__(self, node):
-        node = self.ensure_node(node)
         return Variable(self, node, Add())
 
     def __sub__(self, node):
-        node = self.ensure_node(node)
         node = node * -1
         return self + node
     
@@ -48,11 +47,11 @@ class Variable:
         return Variable(node, self, Divide())
     
     def __pow__(self, node):
+        return Variable(self, node, Pow())
+
+    def __rpow__(self, node):
         return Variable(self, node, Exponent())
     
-    def __rpow__(self, node):
-        return Variable(node, self, Exponent())
-
     def abs(self):
         return Variable(self, 'a', Abs())
 
@@ -74,14 +73,17 @@ class Variable:
         """
         Computes the gradient with respect to parent0, parent1.
         """
-        parent0_grad, parent1_grad = self.primitive.get_grad(self.parent0.compute(), self.parent1.compute())
         self.grad_dict = {}
-        for key in self.parent0.grad_dict:
-            if self.parent0.grad_dict[key] is not None:
-                self.grad_dict[key] = self.parent0.grad_dict[key] * parent0_grad if parent0_grad is not None else None
-        for key in self.parent1.grad_dict:
-            if self.parent1.grad_dict[key] is not None:
-                self.grad_dict[key] = self.parent1.grad_dict[key] * parent1_grad if parent1_grad is not None else None
+        parent0_val, parent1_val = self.parent0.compute(), self.parent1.compute()
+
+        def update_grad(grad_dict):
+            for key in grad_dict:
+                grad = self.primitive.get_grad(parent0_val, self.parent0.grad_dict.get(key, 0), parent1_val, self.parent1.grad_dict.get(key, 0))
+                if grad_dict[key] is not None:
+                    self.grad_dict[key] = grad 
+
+        update_grad(self.parent0.grad_dict)
+        update_grad(self.parent1.grad_dict)
 
         if self.parent0.primitive is not None:
             del self.parent0
@@ -98,3 +100,36 @@ class Variable:
     def reset_grad(self):
         self.grad_dict = {id(self): 1}
         return self
+
+
+if __name__ == "__main__":
+    import numpy as np
+
+    x = Variable(3)
+
+    f = x/x
+    assert f.get_grad(x) == 0
+
+    f = x*x*x*x
+    assert f.get_grad(x) == 4*3**3
+
+    y = Variable(5)
+    f = (x*y) / (x + y)
+
+    assert f.get_grad(x) == 25 / 64
+    assert f.get_grad(y) == 9 / 64
+
+    f = (-(x*y) / (x + y)).abs()
+
+    assert f.get_grad(x) == 25 / 64
+    assert f.get_grad(y) == 9 / 64
+
+    f = x**2 * y
+    assert f.get_grad(x) == 30
+    assert f.get_grad(y) == 9
+
+    f = (x**2).log()
+    assert f.get_grad(x) == 2 / 3
+
+    f = np.e**x
+    assert f.get_grad(x) == np.e**3

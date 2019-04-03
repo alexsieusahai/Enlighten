@@ -211,7 +211,7 @@ class Matrix:
         """
         Returns the mean value over every single element in self.
         """
-        return self.sum() / (len(self) * len(self[0]))
+        return self.sum().elementwise_apply(lambda x: x/ (len(self) * len(self[0])))
 
 
 if __name__ == "__main__":

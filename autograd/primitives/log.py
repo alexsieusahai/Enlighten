@@ -3,10 +3,12 @@ import numpy as np
 
 class Log:
     def __init__(self):
-        self.f = lambda x: np.log(x)
+        pass
 
-    def __call__(self, x, y=None):
-        return self.f(x)
+    def __call__(self, f, g=None):
+        return np.log(f)
 
-    def get_grad(self, x, y):
-        return (1 / x, None)
+    def get_grad(self, f, f_prime, g=None, g_prime=None):
+        if f_prime is None:
+            return None
+        return f_prime / f

@@ -1,9 +1,9 @@
 class Multiply:
     def __init__(self):
-        self.f = lambda x, y: x*y
+        pass
         
-    def __call__(self, x, y):
-        return self.f(x, y)
+    def __call__(self, f, g):
+        return f*g
     
-    def get_grad(self, x, y):
-        return (y, x)
+    def get_grad(self, f, f_prime, g, g_prime):
+        return f_prime * g + f * g_prime

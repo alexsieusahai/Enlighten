@@ -1,9 +1,11 @@
 class Divide:
     def __init__(self):
-        self.f = lambda x, y: x / y
-        
-    def __call__(self, x, y):
-        return self.f(x, y)
+        pass 
+
+    def __call__(self, f, g):
+        return f / g
     
-    def get_grad(self, x, y):
-        return (1/y, - x / y**2)
+    def get_grad(self, f, f_prime, g, g_prime):
+        if g == 0:
+            return float('inf')
+        return (g*f_prime - f*g_prime) / (g ** 2)

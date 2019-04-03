@@ -3,10 +3,12 @@ import numpy as np
 
 class Exponent:
     def __init__(self):
-        self.f = lambda x, y: x ** y
+        pass
         
-    def __call__(self, x, y):
-        return self.f(x, y)
+    def __call__(self, f, g):
+        return f ** g
     
-    def get_grad(self, x, y):
-        return (y * x ** (y-1), x**y * np.log(x))
+    def get_grad(self, f, f_prime, g, g_prime):
+        if f_prime is None or g_prime is None:
+            return None
+        return g**f * np.log(g) * f_prime
