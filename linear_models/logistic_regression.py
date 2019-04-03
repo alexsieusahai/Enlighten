@@ -1,12 +1,13 @@
 import math
 
-from linear_regression import LinearRegression
+from .linear_regression import LinearRegression
 
 import sys
-sys.path.append('..')
+sys.path.append('.')
 from autograd import Variable, Matrix
 from optimizers import SGD
 from dataloader import DataLoader
+from loss_functions import binary_cross_entropy
 
 
 def sigmoid(x: Variable) -> Variable:
@@ -32,42 +33,10 @@ class LogisticRegression(LinearRegression):
         mat = super()._evaluate(row).elementwise_apply(sigmoid)
         return mat
 
-
-if __name__ == "__main__":
-    import random
-
-    from loss_functions import binary_cross_entropy
-
-    params = [0.3, 0.6, 0.2]
-    f = lambda row: sigmoid(sum([row[i] * params[i] for i in range(len(row))]) + 0.2)
-    X = []
-    y = []
-    thresh = 0.3
-    for _ in range(2000):
-        X.append([random.random() for _ in range(3)])
-        val = f(X[-1])
-        y.append([val > thresh])
-
-    loader = DataLoader(X, y)
-
-    logreg = LogisticRegression()
-    optim = SGD(0.01, minibatch_size=5)
-    logreg.fit(loader)
-    print('params')
-    print(logreg.params)
-    print(logreg.bias)
-    print('bce')
-    print(binary_cross_entropy(logreg.predict(Matrix(X)), Matrix(y)))
-
-    X_test = []
-    for _ in range(10):
-        X_test.append([random.random() for _ in range(3)])
-
-    outputs = logreg.predict(Matrix(X_test))
-    res = []
-    for i, output in enumerate(outputs):
-        res.append([f(X_test[i]) > thresh])
-        print(output, f(X_test[i]) > thresh)
-
-
-    print(binary_cross_entropy(logreg.predict(Matrix(X_test)), Matrix(res)))
+    def fit(self, loader: DataLoader, optimizer=None, loss_function=None) -> None:
+        """
+        Wrapper around LinearRegression's fit, but instead, we use binary cross entropy as 
+            our default loss function.
+        """
+        loss_function = binary_cross_entropy if loss_function is None else loss_function
+        super().fit(loader, optimizer, loss_function)

@@ -1,12 +1,12 @@
 import random
 from typing import List
 
-import os
-print(os.getcwd())
 import sys
 sys.path.append('.')
 from autograd import Variable, Matrix
+from optimizers import SGD
 from loss_functions import mean_squared_error
+from dataloader import DataLoader
 
 
 class LinearRegression:
@@ -34,7 +34,6 @@ class LinearRegression:
         """
         return row * self.params + self.bias
         
-
     def _regularize(self) -> Matrix:
         """
         Returns the sum of the l1 and l2 norms of the parameters, scaled by alpha and beta.
@@ -43,13 +42,9 @@ class LinearRegression:
 
     def fit(self, loader: DataLoader, optimizer=None, loss_function=None) -> None:
         """
-        I should really be using a DataLoader here, to handle minibatching elegantly, 
-            rather than using X, y like sklearn.
-
         Fits the model to the data.
         If no optimizer is passed in, the default optimizer is SGD.
-        If no loss function is passed in, the default loss function is MSE.
-        :returns: None; self.params are fit to the data.
+        If no loss function is passed in, the default loss function is MSE.  :returns: None; self.params are fit to the data.
         """
         if optimizer is None:
             optimizer = SGD(0.01)
