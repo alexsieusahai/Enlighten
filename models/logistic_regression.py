@@ -18,11 +18,11 @@ class LogisticRegression(LinearRegression):
     That is, we assume that the manifold of the data is a plane with a pointwise application of
         the sigmoid function.
     """
-    def __init__(self, params=None):
+    def __init__(self, params=None, bias=None, alpha=0, beta=0):
         """
         :param params: The starting parameters to use.
         """
-        self.params = params
+        super().__init__(params, bias, alpha, beta)
 
     def _evaluate(self, row: Matrix) -> Matrix:
         """
@@ -54,8 +54,10 @@ if __name__ == "__main__":
     logreg = LogisticRegression()
     optim = SGD(0.01, minibatch_size=5)
     logreg.fit(loader)
+    print('params')
     print(logreg.params)
     print(logreg.bias)
+    print('bce')
     print(binary_cross_entropy(logreg.predict(Matrix(X)), Matrix(y)))
 
     X_test = []
@@ -63,5 +65,10 @@ if __name__ == "__main__":
         X_test.append([random.random() for _ in range(3)])
 
     outputs = logreg.predict(Matrix(X_test))
+    res = []
     for i, output in enumerate(outputs):
+        res.append([f(X_test[i]) > thresh])
         print(output, f(X_test[i]) > thresh)
+
+
+    print(binary_cross_entropy(logreg.predict(Matrix(X_test)), Matrix(res)))
