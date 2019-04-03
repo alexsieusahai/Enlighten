@@ -24,10 +24,11 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 ## What's on the immediate horizon?
 
 * Decision Tree Regression / Classification
-* Synatic sugar for feedforward networks.
-* `xor` example.
-* Model definition as function composition.
-    * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them. I might consider destroying the graph as I go on, once I have the gradients, in order to make it extremely memory efficient.
+* Multicore processing for matrix multiplication
+* Synatic sugar for feedforward networks
+* `xor` example
+* Model definition as function composition
+    * Recurrent neural networks will probably be constructed as an unrolled computational graph, where I will accumulate the gradients at each point as I need them
 
 ## What needs to get done, but is not on the immediate horizon?
 * Defining convolutions to fit well into my automatic differentiation paradigm.
