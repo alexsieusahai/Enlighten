@@ -19,10 +19,10 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 * LinearRegression object, and the basic interface for models
 * DataLoader object (handles minibatching)
 * Common loss functions (MSE, MAE, CrossEntropy)
+* Logistic regression
 
 ## What's on the immediate horizon?
 
-* Logistic regression
 * Decision Tree Regression / Classification
 * Synatic sugar for feedforward networks.
 * `xor` example.
@@ -61,8 +61,6 @@ This will output:
 
 We can do this for multiple arguments, and store into intermediate variables, as well:
 ```
-import numpy as np
-
 from variable import Variable
 
 x = Variable(4)
@@ -79,6 +77,22 @@ This will output the following, as expected.
 ```
 
 This is an extremely expressive and beautiful way of doing automatic differentiation, in my opinion. This forms the backbone of the deep learning library.
+
+Multiple variables being used over and over is supported, as well, using basic derivative rules of calculus:
+```
+from variable import Variable
+
+x = Variable(4)
+z = Variable(2)
+f = x\*\*2 + (x + z) / (x + 5 * z)
+print(f)
+print(f.get\_grad(x), f.get\_grad(z))
+```
+This will output the following, as expected.
+```
+16.428571428571427
+8.040816326530612 -0.08163265306122448
+```
 
 ## Naive Matrix Library
 ### Why do this?
