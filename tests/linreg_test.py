@@ -1,40 +1,29 @@
-import random
+from .generate_linear_dataset import generate_linear_dataset
 
 from ..autograd import Variable, Matrix
 from ..linear_models import LinearRegression
-from ..dataloader import DataLoader
 from ..optimizers import SGD
+from ..validation import KFold
 
 
 def test_linreg():
-    num_cols = 10
-    true_params = [i for i in range(num_cols)]
-    f = lambda row: sum([row[i] * true_params[i] for i in range(len(row))]) + 3
-    X = []
-    y = []
-    for _ in range(30000): 
-        X.append([random.random() for _ in range(num_cols)])
-        y.append([f(X[-1])])
+    num_cols, num_samples = 3, 10000
+    loader, true_params = generate_linear_dataset(num_cols, num_samples)
+    kfold = KFold(2)
 
-    loader = DataLoader(X, y)
+    for train, valid in kfold.split(loader):
+        linreg = LinearRegression()
+        optim = SGD(0.1, 0.1, minibatch_size=1)
+        linreg.fit(train, optim)
 
-    linreg = LinearRegression()
-    optim = SGD(0.05, minibatch_size=5)
-    linreg.fit(loader)
+        eps = 1e-4
 
-    eps = 1e-4
+        for i in range(num_cols):
+            assert (linreg.params[i][0] - true_params[i]).abs() < eps
 
-    for i in range(3):
-        assert (linreg.params[i][0] - true_params[i]).abs() < eps
+        assert (linreg.bias[0][0] - 3).abs() < eps
 
-    assert (linreg.bias[0][0] - 3).abs() < eps
-
-    X_test = []
-    y_test = []
-    for _ in range(10):
-        X_test.append([random.random() for _ in range(num_cols)])
-        y_test.append(f(X_test[-1]))
-
-    outputs = linreg.predict(Matrix(X_test))
-    for i, output in enumerate(outputs):
-        assert (output[0] - y_test[i]).abs() < eps
+        outputs = linreg.predict(Matrix(valid.X))
+        y_valid = valid.y
+        for i, output in enumerate(outputs):
+            assert (output[0] - y_valid[i][0]).abs() < eps

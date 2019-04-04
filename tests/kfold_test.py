@@ -11,4 +11,5 @@ def test_KFold():
     loader = DataLoader(X, y)
 
     for train_loader, valid_loader in kfold.split(loader):
-        print('a')
+        assert len(train_loader) in [8, 9]
+        assert len(valid_loader) in [1, 2]
