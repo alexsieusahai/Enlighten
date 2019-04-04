@@ -16,12 +16,12 @@ class SGD(Optimizer):
         self.reset_minibatch_grad()
 
     def step(self, x, x_grad):
-        self.accumulate_minibatch_grad(x_grad)
+        self.accumulate_minibatch_grad(x, x_grad)
         if self.minibatch_accumulated():
             if id(x) not in self.last_scaled_grad_dict:
-                self.last_scaled_grad_dict[id(x)] = x_grad
+                self.last_scaled_grad_dict[id(x)] = self.avg_x_grad_dict[id(x)]
 
-            scaled_grad = self.beta * self.last_scaled_grad_dict[id(x)] + self.alpha * self.avg_x_grad
+            scaled_grad = self.beta * self.last_scaled_grad_dict[id(x)] + self.alpha * self.avg_x_grad_dict[id(x)]
             rescaled_params = x - scaled_grad
             rescaled_params = rescaled_params.reset_grad()
             del self.last_scaled_grad_dict[id(x)]

@@ -11,14 +11,11 @@ class Optimizer:
 
     def reset_minibatch_grad(self):
         self.curr_size = 0
-        self.avg_x_grad = None
+        self.avg_x_grad_dict = {}
 
     def minibatch_accumulated(self):
         return self.curr_size == self.minibatch_size
 
-    def accumulate_minibatch_grad(self, x_grad):
+    def accumulate_minibatch_grad(self, x, x_grad):
         self.curr_size += 1
-        if self.avg_x_grad is None:
-            self.avg_x_grad = x_grad
-        else:
-            self.avg_x_grad += x_grad / self.minibatch_size
+        self.avg_x_grad_dict[id(x)] = x_grad / self.minibatch_size + self.avg_x_grad_dict.get(id(x), x_grad.zeros())
