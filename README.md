@@ -26,6 +26,7 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 
 ## What's on the immediate horizon?
 
+* Add Random Forest to tree based models using implemented decision tree
 * Synatic sugar for feedforward networks
 * `xor` example
 * Model definition as function composition
