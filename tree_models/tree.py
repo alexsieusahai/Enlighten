@@ -10,23 +10,6 @@ from dataloader import DataLoader
 from validation import KFold
 
 
-"""
-The way I'm gonna do this is as follows:
-
-    Every node is _still_ considered to be a model, with its own `fit` and `predict` methods.
-    If it's not a leaf node:
-        `fit` will make its predict call point the example to the right node to go to to get classified.
-        `predict` will then return `predict` of the leaf that the example should be going to.
-
-    If it is a leaf node:
-        It will have a `model` attribute which will be fit at the end.
-        `fit` will fit the model to the data that made it that far down.
-        `predict` will return the predictions for whatever example made it to that node.
-"""
-
-def negative_accuracy(preds, actual):
-    return -sum([preds[i] == actual[i] for i in range(len(preds))]) / len(preds)
-
 def split(X, y, split_val, col):
     """
     Splits X into two parts; one where X[col] < split_val for every row, and one where
@@ -149,6 +132,7 @@ class Node:
 
 if __name__ == "__main__":
     from majority_classifier import MajorityClassifier
+    from metrics import negative_accuracy
 
     criterion = negative_accuracy 
     Model = MajorityClassifier
@@ -156,11 +140,15 @@ if __name__ == "__main__":
     tree = Node(criterion, Model, {})
 
     num_samples = 1000
-    X = Matrix([[np.random.random(), np.random.random()] for _ in range(num_samples)])
-    y = Matrix([[np.random.randint(0, 2)] for _ in range(num_samples)])
+    X, y = [], []
+    for _ in range(num_samples):
+        target = np.random.randint(0, 2)
+        X.append([np.random.random(), target])
+        y.append(target)
+
+    X, y = Matrix(X), Matrix(y)
     
     tree.fit(X, y)
 
     preds = (tree.predict(X))
-    print(preds)
     print(negative_accuracy(preds, y))
