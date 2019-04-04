@@ -1,5 +1,5 @@
 import sys
-sys.path.append('..')
+sys.path.append('.')
 from autograd import Variable, Matrix
 
 class DataLoader:
@@ -17,13 +17,26 @@ class DataLoader:
             print('The lengths of X and y passed into DataLoader do not agree.')
             raise ValueError
 
+    def get_output(self, i):
+        return Matrix([self.X[i]]), Matrix([self.y[i]])
+
+    def __getitem__(self, idx):
+        if isinstance(idx, int):
+            return self.get_output(idx)
+        if isinstance(idx, list):
+            X, y = [], []
+            for i in idx:
+                X.append(self.X[i])
+                y.append(self.y[i])
+            return DataLoader(Matrix(X), Matrix(y))
+
     def __iter__(self):
         while self.i < len(self.X):
-            yield Matrix([self.X[self.i]]), Matrix([self.y[self.i]])
+            yield self.get_output(self.i)
             self.i += 1
 
     def __len__(self):
         return len(self.X)
 
     def peek(self):
-        return Matrix([self.X[self.i]]), Matrix([self.y[self.i]])
+        return self.get_output(self.i)
