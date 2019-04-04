@@ -1,5 +1,7 @@
 import numpy as np
 
+import time
+import multiprocessing as mp
 from typing import Tuple, Callable
 
 try: 
@@ -11,6 +13,21 @@ except ModuleNotFoundError:
     from variable import Variable
     from safety import ensure_mul, ensure_add, ensure_hadamard
 
+
+"""
+For everything multiprocessing related that looks very esoteric, refer to this document:
+    https://research.wmz.ninja/articles/2018/03/on-sharing-large-arrays-when-using-pythons-multiprocessing.html
+"""
+var_dict = {}
+
+def rowmul(args):
+    row_num, col_num = args
+    row0, row1 = var_dict['mat0'][row_num], var_dict['mat1_t'][col_num]
+    start_time = time.time()
+    val = 0
+    for i in range(len(row0)):
+        val += row0[i] * row1[i]
+    return val
 
 def initialize_matrix(num_rows, num_cols, val):
     new = []
@@ -36,8 +53,9 @@ class Matrix:
 
     def __mul__(self, x):
         if isinstance(x, type(self)):
-            ensure_mul(self, x)
-            return self.matmul(self, x)
+            if len(self) > 100:
+                return self.matmul(x)
+            return self.matmul_serial(x)
         return self.scalarmul(x)
 
     def __rmul__(self, x):
@@ -47,6 +65,12 @@ class Matrix:
         been called.
         """
         return self.scalarmul(x)
+
+    def __truediv__(self, x):
+        if isinstance(x, Matrix):
+            print("Matrix - matrix division doesn't make sense, I think. Exiting...")
+            raise TypeError
+        return self.elementwise_apply(lambda y: y / x)
 
     def __add__(self, mat):
         ensure_add(self, mat)
@@ -61,7 +85,7 @@ class Matrix:
 
     def __getitem__(self, idx):
         if isinstance(idx, int):
-            return Matrix(self.entries[idx])
+            return self.entries[idx]
         output = []
         for i in idx:
             output.append(self[i])
@@ -95,21 +119,47 @@ class Matrix:
                 new[0][row_num] = old_entries[row_num]
         return new
 
-    def matmul(self, mat0, mat1):
+    def matmul_serial(self, mat):
         """
         Matrix, matrix multiplication. 
+        Assumes that self and mat have the correct dimensionality.
+        Serial version of matmul.
+        """
+        ensure_mul(self, mat)
+        start_time = time.time()
+        mat_t = mat.transpose()
+        entries = zeros(len(self), len(mat[0]))
+        for row_num in range(len(self)):
+            start_row = time.time()
+            for col_num in range(len(mat[0])):
+                val = 0
+                for entry_id in range(len(self[row_num])):
+                    val += self[row_num][entry_id] * mat_t[col_num][entry_id]
+                entries[row_num][col_num] = val
+        return Matrix(entries)
+
+    def matmul(self, mat):
+        """
+        Matrix, matrix multiplication.
         Assumes that mat0 and mat1 have the correct dimensionality.
         """
-        ensure_mul(mat0, mat1)
-        mat1_t = mat1.transpose()
-        entries = zeros(len(mat0), len(mat1[0]))
-        for row_num in range(len(mat0)):
-            for col_num in range(len(mat1[0])):
-                val = 0
-                for entry_id in range(len(mat0[row_num])):
-                    val += mat0[row_num][entry_id] * mat1_t[col_num][entry_id]
-                entries[row_num][col_num] = val
-        return entries
+        ensure_mul(self, mat)
+        mat_t = mat.transpose()
+        entries = [None for _ in range(len(self))]
+
+        def init_worker(mat0, mat1_t):
+            var_dict['mat0'] = mat0 
+            var_dict['mat1_t'] = mat1_t
+
+        pool = mp.Pool(mp.cpu_count(), initializer=init_worker, initargs=(self, mat_t))
+
+        for row_num in range(len(self)):
+            start_time = time.time()
+            row = pool.map(rowmul, [(row_num, col_num) for col_num in range(len(mat[0]))])
+            entries[row_num] = list(row)
+
+        return Matrix(entries)
+            
 
     def scalarmul(self, c):
         """
@@ -267,6 +317,7 @@ if __name__ == "__main__":
     other_mat = Matrix([[1, 2, 3], [4, 5, 6]])
     inds = [0, 1]
     eval_list = [
+            'mat * other_mat',
             'mat',
             'mat.transpose()',
             'mat * mat',
@@ -285,19 +336,36 @@ if __name__ == "__main__":
         print(expr)
         print(eval(expr))
 
-    def time_test():
+    def time_test(dim0, dim1, dim2, multi=False):
         import time
 
         A_vals = []
-        for _ in range(300):
-            A_vals.append(list(np.random.rand(600)))
+        for _ in range(dim0):
+            A_vals.append(list(np.random.rand(dim1)))
         A = Matrix(A_vals)
 
         B_vals = []
-        for _ in range(600):
-            B_vals.append(list(np.random.rand(500)))
+        for _ in range(dim1):
+            B_vals.append(list(np.random.rand(dim2)))
         B = Matrix(B_vals)
 
         start_time = time.time()
-        A * B
+        if multi:
+            A * B
+        else:
+            A.matmul_serial(B)
         print(time.time() - start_time)
+
+    shape_list = [
+            (100, 200, 150),
+            (3, 5, 6),
+            (10, 100, 40),
+            (200, 10, 200),
+            (500, 100, 200)
+            ]
+
+    for dim0, dim1, dim2 in shape_list:
+        print(dim0, dim1, dim2)
+        for multi in [True, False]:
+            time_test(dim0, dim1, dim2, multi=multi)
+
