@@ -25,7 +25,7 @@ The way I'm gonna do this is as follows:
 """
 
 def negative_accuracy(preds, actual):
-    return -sum([preds[i] != actual[i] for i in range(len(preds))]) / len(preds)
+    return -sum([preds[i] == actual[i] for i in range(len(preds))]) / len(preds)
 
 def split(X, y, split_val, col):
     """
