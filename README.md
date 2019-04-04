@@ -21,10 +21,11 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 * Common loss functions (MSE, MAE, CrossEntropy)
 * Logistic regression
 * Decision Tree Regression / Classification
+* Multicore processing for matrix multiplication
+    * For large matrices, it is used. For smaller matrices, the overhead of instantiating processes is not worth it (I avoided serializing and deserializing big objects which gave a very big speed boost on large matrices).
 
 ## What's on the immediate horizon?
 
-* Multicore processing for matrix multiplication
 * Synatic sugar for feedforward networks
 * `xor` example
 * Model definition as function composition
