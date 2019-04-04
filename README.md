@@ -20,10 +20,10 @@ How far can we push autodiff? Can we make a fully functioning (albeit, _really_ 
 * DataLoader object (handles minibatching)
 * Common loss functions (MSE, MAE, CrossEntropy)
 * Logistic regression
+* Decision Tree Regression / Classification
 
 ## What's on the immediate horizon?
 
-* Decision Tree Regression / Classification
 * Multicore processing for matrix multiplication
 * Synatic sugar for feedforward networks
 * `xor` example
